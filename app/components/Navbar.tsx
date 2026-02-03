@@ -1,12 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const { isDarkMode, toggleDarkMode } = useTheme();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -26,7 +24,7 @@ export default function Navbar() {
         { name: 'Contact', href: '#footer' },
     ];
 
-    // Smooth scroll handler
+    // Smooth scroll handler with custom easing for premium sliding effect
     const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
         e.preventDefault();
         const targetId = href.replace('#', '');
@@ -35,56 +33,35 @@ export default function Navbar() {
         if (targetElement) {
             const navbarHeight = 80; // Account for fixed navbar
             const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navbarHeight;
+            const startPosition = window.scrollY;
+            const distance = targetPosition - startPosition;
+            const duration = 1000; // Duration in milliseconds
+            let startTime: number | null = null;
 
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+            // Easing function for smooth deceleration (ease-out-cubic)
+            const easeOutCubic = (t: number): number => {
+                return 1 - Math.pow(1 - t, 3);
+            };
+
+            const animateScroll = (currentTime: number) => {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                const easedProgress = easeOutCubic(progress);
+
+                window.scrollTo(0, startPosition + (distance * easedProgress));
+
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animateScroll);
+                }
+            };
+
+            requestAnimationFrame(animateScroll);
         }
 
         // Close mobile menu if open
         setMobileMenuOpen(false);
     };
-
-    // Sun icon for dark mode (click to switch to light)
-    const SunIcon = () => (
-        <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="5" />
-            <line x1="12" y1="1" x2="12" y2="3" />
-            <line x1="12" y1="21" x2="12" y2="23" />
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-            <line x1="1" y1="12" x2="3" y2="12" />
-            <line x1="21" y1="12" x2="23" y2="12" />
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-        </svg>
-    );
-
-    // Moon icon for light mode (click to switch to dark)
-    const MoonIcon = () => (
-        <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-    );
 
     return (
         <nav
@@ -97,7 +74,7 @@ export default function Navbar() {
                 zIndex: 1000,
                 padding: scrolled ? '12px 0' : '24px 0',
                 background: scrolled
-                    ? (isDarkMode ? 'rgba(18, 18, 18, 0.85)' : 'rgba(255, 255, 255, 0.85)')
+                    ? 'rgba(255, 255, 255, 0.85)'
                     : 'transparent',
                 backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
                 borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
@@ -121,15 +98,16 @@ export default function Navbar() {
                             fontSize: '1.25rem',
                             boxShadow: '0 4px 12px rgba(229, 62, 62, 0.25)',
                             padding: '5px 10px',
+
                         }}
                     >
                         CST
                     </div>
                     <div>
-                        {/* <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.15rem', color: isDarkMode ? 'white' : 'var(--gray-darker)', lineHeight: 1.2 }}>
+                        {/* <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.15rem', color: 'var(--gray-darker)', lineHeight: 1.2 }}>
                             CST International
                         </div> */}
-                        <div style={{ fontSize: '0.75rem', color: isDarkMode ? 'rgba(255,255,255,0.6)' : 'var(--gray-medium)', fontWeight: 500 }}>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--gray-medium)', fontWeight: 500 }}>
                             MSU
                         </div>
                     </div>
@@ -142,7 +120,7 @@ export default function Navbar() {
                         alignItems: 'center',
                         gap: '6px',
                         padding: '6px',
-                        background: scrolled ? (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)') : 'rgba(255,255,255,0.8)',
+                        background: scrolled ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.8)',
                         backdropFilter: 'blur(8px)',
                         borderRadius: '100px',
                         border: '1px solid rgba(255,255,255,0.1)',
@@ -156,7 +134,7 @@ export default function Navbar() {
                             onClick={(e) => handleSmoothScroll(e, link.href)}
                             style={{
                                 padding: '8px 20px',
-                                color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'var(--gray-dark)',
+                                color: 'var(--gray-dark)',
                                 textDecoration: 'none',
                                 fontSize: '0.9rem',
                                 fontWeight: 500,
@@ -165,13 +143,13 @@ export default function Navbar() {
                                 position: 'relative',
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.1)' : 'white';
-                                e.currentTarget.style.color = isDarkMode ? 'white' : 'var(--rose-deep)';
+                                e.currentTarget.style.background = 'white';
+                                e.currentTarget.style.color = 'var(--rose-deep)';
                                 e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.color = isDarkMode ? 'rgba(255,255,255,0.9)' : 'var(--gray-dark)';
+                                e.currentTarget.style.color = 'var(--gray-dark)';
                                 e.currentTarget.style.boxShadow = 'none';
                             }}
                         >
@@ -181,37 +159,8 @@ export default function Navbar() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="desktop-nav-controls">
-                    {/* Dark Mode Toggle Button */}
-                    <button
-                        onClick={toggleDarkMode}
-                        aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '40px',
-                            height: '40px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            borderRadius: '50%',
-                            cursor: 'pointer',
-                            color: isDarkMode ? '#fbbf24' : 'var(--rose-deep)',
-                            transition: 'all 0.3s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)';
-                            e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-                            e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
-                        }}
-                    >
-                        {isDarkMode ? <SunIcon /> : <MoonIcon />}
-                    </button>
-
                     <a
-                        href="https://it.msu.ac.th/course-2/bsc-course/bsc-cst/"
+                        href="https://it.msu.ac.th/course-2/it-admission/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-primary"
@@ -234,28 +183,6 @@ export default function Navbar() {
 
                 {/* Mobile Menu Button */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} className="mobile-controls">
-                    {/* Mobile Dark Mode Toggle */}
-                    <button
-                        onClick={toggleDarkMode}
-                        aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                        className="mobile-theme-btn"
-                        style={{
-                            display: 'none',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '40px',
-                            height: '40px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                            border: 'none',
-                            borderRadius: '50%',
-                            cursor: 'pointer',
-                            color: isDarkMode ? '#fbbf24' : 'var(--rose-deep)',
-                            transition: 'all 0.3s ease',
-                        }}
-                    >
-                        {isDarkMode ? <SunIcon /> : <MoonIcon />}
-                    </button>
-
                     <button
                         className="mobile-menu-btn"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -273,7 +200,7 @@ export default function Navbar() {
                             style={{
                                 width: '24px',
                                 height: '2px',
-                                background: isDarkMode ? 'white' : 'var(--gray-darker)',
+                                background: 'var(--gray-darker)',
                                 borderRadius: '2px',
                                 transition: 'all 0.3s ease',
                                 transform: mobileMenuOpen ? 'rotate(45deg) translateY(7px)' : 'none',
@@ -283,7 +210,7 @@ export default function Navbar() {
                             style={{
                                 width: '24px',
                                 height: '2px',
-                                background: isDarkMode ? 'white' : 'var(--gray-darker)',
+                                background: 'var(--gray-darker)',
                                 borderRadius: '2px',
                                 transition: 'all 0.3s ease',
                                 opacity: mobileMenuOpen ? 0 : 1,
@@ -293,7 +220,7 @@ export default function Navbar() {
                             style={{
                                 width: '24px',
                                 height: '2px',
-                                background: isDarkMode ? 'white' : 'var(--gray-darker)',
+                                background: 'var(--gray-darker)',
                                 borderRadius: '2px',
                                 transition: 'all 0.3s ease',
                                 transform: mobileMenuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none',
@@ -315,7 +242,7 @@ export default function Navbar() {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: isDarkMode ? 'rgba(18, 18, 18, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+                    background: 'rgba(255, 255, 255, 0.98)',
                     backdropFilter: 'blur(20px)',
                     zIndex: 999,
                     overflowY: 'auto'
@@ -328,7 +255,7 @@ export default function Navbar() {
                         onClick={(e) => handleSmoothScroll(e, link.href)}
                         style={{
                             padding: '16px 20px',
-                            color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'var(--gray-dark)',
+                            color: 'var(--gray-dark)',
                             textDecoration: 'none',
                             fontSize: '1.2rem',
                             fontWeight: 600,
@@ -378,8 +305,100 @@ export default function Navbar() {
           .desktop-nav, .desktop-nav-controls {
             display: none !important;
           }
-          .mobile-menu-btn, .mobile-theme-btn {
+          .mobile-menu-btn {
             display: flex !important;
+          }
+          /* Mobile Adjustments */
+          .container {
+             padding: 0 14px !important;
+          }
+          nav {
+             padding: 10px 0 !important;
+          }
+          /* Logo adjustments */
+          a[href="#hero"] > div:first-child {
+             width: 32px !important;
+             height: 32px !important;
+             border-radius: 8px !important;
+             font-size: 0.85rem !important;
+             padding: 4px 8px !important;
+          }
+          a[href="#hero"] div[style*="font-size: 1.25rem"] {
+             font-size: 0.85rem !important;
+          }
+           a[href="#hero"] div[style*="font-size: 0.75rem"] {
+             font-size: 0.6rem !important;
+          }
+          
+          /* Mobile Menu Button adjustments */
+          .mobile-menu-btn {
+              padding: 4px !important;
+              gap: 3px !important;
+          }
+          .mobile-menu-btn span {
+              width: 18px !important;
+              height: 2px !important;
+          }
+          
+          /* Mobile Menu adjustments */
+          .mobile-menu {
+              padding: 16px !important;
+              top: 60px !important;
+          }
+          .mobile-menu a {
+              padding: 12px 14px !important;
+              font-size: 0.95rem !important;
+              border-radius: 12px !important;
+          }
+          .mobile-menu a span {
+              font-size: 0.95rem !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .container {
+             padding: 0 10px !important;
+          }
+          nav {
+             padding: 8px 0 !important;
+          }
+          /* Logo even smaller */
+          a[href="#hero"] > div:first-child {
+             width: 28px !important;
+             height: 28px !important;
+             border-radius: 6px !important;
+             font-size: 0.75rem !important;
+             padding: 3px 6px !important;
+          }
+          a[href="#hero"] div[style*="font-size: 1.25rem"] {
+             font-size: 0.75rem !important;
+          }
+           a[href="#hero"] div[style*="font-size: 0.75rem"] {
+             font-size: 0.55rem !important;
+          }
+          
+          /* Mobile Menu Button even smaller */
+          .mobile-menu-btn {
+              padding: 3px !important;
+              gap: 3px !important;
+          }
+          .mobile-menu-btn span {
+              width: 16px !important;
+              height: 1.5px !important;
+          }
+          
+          /* Mobile Menu even smaller */
+          .mobile-menu {
+              padding: 12px !important;
+              top: 50px !important;
+          }
+          .mobile-menu a {
+              padding: 10px 12px !important;
+              font-size: 0.85rem !important;
+              border-radius: 10px !important;
+          }
+          .mobile-menu a span {
+              font-size: 0.85rem !important;
           }
         }
       `}</style>

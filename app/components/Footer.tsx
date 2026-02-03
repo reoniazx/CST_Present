@@ -286,6 +286,79 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
+
+            <style jsx>{`
+                @media (max-width: 768px) {
+                    /* Smaller social icons */
+                    a[title] {
+                        width: 38px !important;
+                        height: 38px !important;
+                        border-radius: 10px !important;
+                        font-size: 1.1rem !important;
+                    }
+                    
+                    /* Smaller brand logo */
+                    div[style*="width: 48px"][style*="height: 48px"] {
+                        width: 40px !important;
+                        height: 40px !important;
+                        border-radius: 12px !important;
+                        font-size: 1.1rem !important;
+                    }
+                    
+                    /* Newsletter section */
+                    div[style*="padding: 40px"] {
+                        padding: 24px !important;
+                        border-radius: 18px !important;
+                    }
+                    
+                    /* Email input */
+                    input[type="email"] {
+                        min-width: 200px !important;
+                        padding: 12px 18px !important;
+                        font-size: 0.85rem !important;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    /* Even smaller social icons */
+                    a[title] {
+                        width: 34px !important;
+                        height: 34px !important;
+                        border-radius: 8px !important;
+                        font-size: 1rem !important;
+                    }
+                    
+                    /* Even smaller brand logo */
+                    div[style*="width: 48px"][style*="height: 48px"] {
+                        width: 36px !important;
+                        height: 36px !important;
+                        border-radius: 10px !important;
+                        font-size: 1rem !important;
+                    }
+                    
+                    /* Newsletter section */
+                    div[style*="padding: 40px"] {
+                        padding: 18px !important;
+                        border-radius: 14px !important;
+                    }
+                    
+                    /* Email input */
+                    input[type="email"] {
+                        min-width: 150px !important;
+                        padding: 10px 14px !important;
+                        font-size: 0.8rem !important;
+                    }
+                    
+                    /* Bottom bar text */
+                    p[style*="font-size: 0.9rem"] {
+                        font-size: 0.75rem !important;
+                    }
+                    
+                    a[style*="font-size: 0.9rem"] {
+                        font-size: 0.75rem !important;
+                    }
+                }
+            `}</style>
         </footer>
     );
 }

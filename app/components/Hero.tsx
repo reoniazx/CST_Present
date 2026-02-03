@@ -233,6 +233,7 @@ export default function Hero() {
                 <div
                     data-aos="fade-up"
                     data-aos-delay="500"
+                    className="stats-container"
                     style={{
                         display: 'flex',
                         justifyContent: 'center',
@@ -248,8 +249,9 @@ export default function Hero() {
                     ].map((stat, index) => (
                         <div key={index} style={{ textAlign: 'center' }}>
                             <div
+                                className="stat-number"
                                 style={{
-                                    fontSize: '2.5rem',
+                                    fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
                                     fontFamily: 'Outfit, sans-serif',
                                     fontWeight: 800,
                                     background: 'linear-gradient(135deg, var(--rose-deep), var(--rose-accent))',
@@ -271,6 +273,31 @@ export default function Hero() {
             <div className="scroll-indicator" data-aos="fade-up" data-aos-delay="700">
                 <span>Scroll Down</span>
             </div>
+
+            <style jsx>{`
+                @media (max-width: 768px) {
+                    .container {
+                        padding-top: 80px !important;
+                    }
+                    .stats-container {
+                        gap: 24px !important;
+                        margin-top: 40px !important;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .container {
+                        padding-top: 60px !important;
+                    }
+                    .stats-container {
+                        gap: 16px !important;
+                        margin-top: 30px !important;
+                    }
+                    .stat-number {
+                        font-size: 1.5rem !important;
+                    }
+                }
+            `}</style>
         </section>
     );
 }
