@@ -81,7 +81,7 @@ export default function Footer() {
                                 <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.1rem', color: 'var(--gray-darker)' }}>
                                     CS International
                                 </div>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--gray-medium)' }}>KMUTT</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--gray-medium)' }}>MSU</div>
                             </div>
                         </div>
                         <p
@@ -94,7 +94,7 @@ export default function Footer() {
                         >
                             Computer Science International Program
                             <br />
-                            King Mongkut&apos;s University of Technology Thonburi
+                            Mahasarakham University
                         </p>
 
                         {/* Social Links */}
@@ -254,7 +254,7 @@ export default function Footer() {
                     }}
                 >
                     <p style={{ color: 'var(--gray-medium)', fontSize: '0.9rem' }}>
-                        © 2024 CS International, KMUTT. All rights reserved.
+                        © 2024 CS International, MSU. All rights reserved.
                     </p>
                     <div style={{ display: 'flex', gap: '24px' }}>
                         <a

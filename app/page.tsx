@@ -9,8 +9,10 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Programs from './components/Programs';
 import Features from './components/Features';
+import PhotoGallery from './components/PhotoGallery';
 import Faculty from './components/Faculty';
 import Footer from './components/Footer';
+import Curriculum from './components/Curriculum';
 
 export default function Home() {
   useEffect(() => {
@@ -35,8 +37,10 @@ export default function Home() {
     <main>
       <Navbar />
       <Hero />
+      <PhotoGallery />
       <About />
       <Programs />
+      <Curriculum />
       <Features />
       <Faculty />
       <Footer />

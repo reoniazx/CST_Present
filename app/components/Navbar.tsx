@@ -10,7 +10,7 @@ export default function Navbar() {
 
     useEffect(() => {
         const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
+            setScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -20,6 +20,7 @@ export default function Navbar() {
         { name: 'Home', href: '#hero' },
         { name: 'About', href: '#about' },
         { name: 'Programs', href: '#programs' },
+        { name: 'Curriculum', href: '#curriculum' },
         { name: 'Features', href: '#features' },
         { name: 'Faculty', href: '#faculty' },
         { name: 'Contact', href: '#footer' },
@@ -94,13 +95,14 @@ export default function Navbar() {
                 left: 0,
                 right: 0,
                 zIndex: 1000,
-                padding: scrolled ? '12px 0' : '20px 0',
+                padding: scrolled ? '12px 0' : '24px 0',
                 background: scrolled
-                    ? (isDarkMode ? 'rgba(13, 13, 13, 0.9)' : 'rgba(255, 255, 255, 0.9)')
+                    ? (isDarkMode ? 'rgba(18, 18, 18, 0.85)' : 'rgba(255, 255, 255, 0.85)')
                     : 'transparent',
-                backdropFilter: scrolled ? 'blur(20px)' : 'none',
-                borderBottom: scrolled ? '1px solid rgba(232, 180, 184, 0.2)' : 'none',
+                backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
+                borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
                 transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: scrolled ? '0 4px 30px rgba(0, 0, 0, 0.1)' : 'none',
             }}
         >
             <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -108,10 +110,8 @@ export default function Navbar() {
                 <a href="#hero" onClick={(e) => handleSmoothScroll(e, '#hero')} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
                     <div
                         style={{
-                            width: '48px',
-                            height: '48px',
                             background: 'linear-gradient(135deg, var(--rose-medium), var(--rose-accent))',
-                            borderRadius: '14px',
+                            borderRadius: '12px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -119,16 +119,19 @@ export default function Navbar() {
                             fontFamily: 'Outfit, sans-serif',
                             fontWeight: 800,
                             fontSize: '1.25rem',
-                            boxShadow: 'var(--shadow-soft)',
+                            boxShadow: '0 4px 12px rgba(229, 62, 62, 0.25)',
+                            padding: '5px 10px',
                         }}
                     >
                         CST
                     </div>
                     <div>
-                        <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.1rem', color: 'var(--gray-darker)' }}>
+                        {/* <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.15rem', color: isDarkMode ? 'white' : 'var(--gray-darker)', lineHeight: 1.2 }}>
                             CST International
+                        </div> */}
+                        <div style={{ fontSize: '0.75rem', color: isDarkMode ? 'rgba(255,255,255,0.6)' : 'var(--gray-medium)', fontWeight: 500 }}>
+                            MSU
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--gray-medium)', marginTop: '-2px' }}>MSU</div>
                     </div>
                 </a>
 
@@ -137,7 +140,12 @@ export default function Navbar() {
                     style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px',
+                        gap: '6px',
+                        padding: '6px',
+                        background: scrolled ? (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)') : 'rgba(255,255,255,0.8)',
+                        backdropFilter: 'blur(8px)',
+                        borderRadius: '100px',
+                        border: '1px solid rgba(255,255,255,0.1)',
                     }}
                     className="desktop-nav"
                 >
@@ -147,27 +155,32 @@ export default function Navbar() {
                             href={link.href}
                             onClick={(e) => handleSmoothScroll(e, link.href)}
                             style={{
-                                padding: '10px 20px',
-                                color: 'var(--gray-dark)',
+                                padding: '8px 20px',
+                                color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'var(--gray-dark)',
                                 textDecoration: 'none',
                                 fontSize: '0.9rem',
                                 fontWeight: 500,
-                                borderRadius: '50px',
-                                transition: 'all 0.3s ease',
+                                borderRadius: '100px',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                position: 'relative',
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'var(--rose-light)';
-                                e.currentTarget.style.color = 'var(--rose-deep)';
+                                e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.1)' : 'white';
+                                e.currentTarget.style.color = isDarkMode ? 'white' : 'var(--rose-deep)';
+                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.color = 'var(--gray-dark)';
+                                e.currentTarget.style.color = isDarkMode ? 'rgba(255,255,255,0.9)' : 'var(--gray-dark)';
+                                e.currentTarget.style.boxShadow = 'none';
                             }}
                         >
                             {link.name}
                         </a>
                     ))}
+                </div>
 
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="desktop-nav-controls">
                     {/* Dark Mode Toggle Button */}
                     <button
                         onClick={toggleDarkMode}
@@ -176,30 +189,46 @@ export default function Navbar() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            width: '42px',
-                            height: '42px',
-                            background: isDarkMode ? 'var(--rose-soft)' : 'var(--rose-light)',
-                            border: 'none',
+                            width: '40px',
+                            height: '40px',
+                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '50%',
                             cursor: 'pointer',
-                            color: 'var(--rose-deep)',
+                            color: isDarkMode ? '#fbbf24' : 'var(--rose-deep)',
                             transition: 'all 0.3s ease',
-                            marginLeft: '8px',
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'scale(1.1) rotate(15deg)';
-                            e.currentTarget.style.boxShadow = 'var(--shadow-soft)';
+                            e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)';
                         }}
                         onMouseLeave={(e) => {
                             e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-                            e.currentTarget.style.boxShadow = 'none';
+                            e.currentTarget.style.background = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
                         }}
                     >
                         {isDarkMode ? <SunIcon /> : <MoonIcon />}
                     </button>
 
-                    <a href="#apply" onClick={(e) => handleSmoothScroll(e, '#apply')} className="btn-primary" style={{ marginLeft: '16px', padding: '12px 28px', fontSize: '0.9rem' }}>
+                    <a
+                        href="https://it.msu.ac.th/course-2/bsc-course/bsc-cst/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary"
+                        style={{
+                            padding: '10px 24px',
+                            fontSize: '0.9rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            boxShadow: '0 4px 14px rgba(229, 62, 62, 0.4)',
+                        }}
+                    >
                         <span>Apply Now</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="7" y1="17" x2="17" y2="7"></line>
+                            <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
                     </a>
                 </div>
 
@@ -216,11 +245,11 @@ export default function Navbar() {
                             justifyContent: 'center',
                             width: '40px',
                             height: '40px',
-                            background: isDarkMode ? 'var(--rose-soft)' : 'var(--rose-light)',
+                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
                             border: 'none',
                             borderRadius: '50%',
                             cursor: 'pointer',
-                            color: 'var(--rose-deep)',
+                            color: isDarkMode ? '#fbbf24' : 'var(--rose-deep)',
                             transition: 'all 0.3s ease',
                         }}
                     >
@@ -244,7 +273,7 @@ export default function Navbar() {
                             style={{
                                 width: '24px',
                                 height: '2px',
-                                background: 'var(--gray-darker)',
+                                background: isDarkMode ? 'white' : 'var(--gray-darker)',
                                 borderRadius: '2px',
                                 transition: 'all 0.3s ease',
                                 transform: mobileMenuOpen ? 'rotate(45deg) translateY(7px)' : 'none',
@@ -254,7 +283,7 @@ export default function Navbar() {
                             style={{
                                 width: '24px',
                                 height: '2px',
-                                background: 'var(--gray-darker)',
+                                background: isDarkMode ? 'white' : 'var(--gray-darker)',
                                 borderRadius: '2px',
                                 transition: 'all 0.3s ease',
                                 opacity: mobileMenuOpen ? 0 : 1,
@@ -264,7 +293,7 @@ export default function Navbar() {
                             style={{
                                 width: '24px',
                                 height: '2px',
-                                background: 'var(--gray-darker)',
+                                background: isDarkMode ? 'white' : 'var(--gray-darker)',
                                 borderRadius: '2px',
                                 transition: 'all 0.3s ease',
                                 transform: mobileMenuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none',
@@ -280,48 +309,76 @@ export default function Navbar() {
                 style={{
                     display: mobileMenuOpen ? 'flex' : 'none',
                     flexDirection: 'column',
-                    padding: '20px',
-                    background: isDarkMode ? 'rgba(13, 13, 13, 0.98)' : 'rgba(255, 255, 255, 0.98)',
-                    borderTop: '1px solid var(--gray-light)',
+                    padding: '24px',
+                    position: 'fixed',
+                    top: '80px',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: isDarkMode ? 'rgba(18, 18, 18, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+                    backdropFilter: 'blur(20px)',
+                    zIndex: 999,
+                    overflowY: 'auto'
                 }}
             >
-                {navLinks.map((link) => (
+                {navLinks.map((link, index) => (
                     <a
                         key={link.name}
                         href={link.href}
                         onClick={(e) => handleSmoothScroll(e, link.href)}
                         style={{
                             padding: '16px 20px',
-                            color: 'var(--gray-dark)',
+                            color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'var(--gray-dark)',
                             textDecoration: 'none',
-                            fontSize: '1rem',
-                            fontWeight: 500,
-                            borderRadius: '12px',
+                            fontSize: '1.2rem',
+                            fontWeight: 600,
+                            borderRadius: '16px',
                             transition: 'all 0.3s ease',
+                            borderBottom: '1px solid rgba(255,255,255,0.05)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            animation: `fadeInUp 0.5s ease forwards ${index * 0.05}s`,
+                            opacity: 0,
+                            transform: 'translateY(10px)',
                         }}
                     >
                         {link.name}
+                        <span style={{ fontSize: '1.2rem', opacity: 0.5 }}>→</span>
                     </a>
                 ))}
                 <a
-                    href="#apply"
+                    href="https://it.msu.ac.th/course-2/bsc-course/bsc-cst/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="btn-primary"
-                    style={{ marginTop: '12px', textAlign: 'center' }}
-                    onClick={(e) => handleSmoothScroll(e, '#apply')}
+                    style={{
+                        marginTop: '24px',
+                        textAlign: 'center',
+                        justifyContent: 'center',
+                        padding: '16px',
+                        fontSize: '1.1rem',
+                        animation: `fadeInUp 0.5s ease forwards ${navLinks.length * 0.05}s`,
+                        opacity: 0,
+                        transform: 'translateY(10px)',
+                    }}
                 >
                     <span>Apply Now</span>
                 </a>
             </div>
 
             <style jsx>{`
-        @media (max-width: 768px) {
-          .desktop-nav {
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 960px) {
+          .desktop-nav, .desktop-nav-controls {
             display: none !important;
           }
-          .mobile-menu-btn {
-            display: flex !important;
-          }
-          .mobile-theme-btn {
+          .mobile-menu-btn, .mobile-theme-btn {
             display: flex !important;
           }
         }
@@ -329,4 +386,3 @@ export default function Navbar() {
         </nav >
     );
 }
-

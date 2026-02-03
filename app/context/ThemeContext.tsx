@@ -18,15 +18,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         // Add no-transition class to prevent flash on load
         document.documentElement.classList.add('no-transition');
 
-        // Check localStorage for saved preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            setIsDarkMode(savedTheme === 'dark');
-        } else {
-            // Check system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            setIsDarkMode(prefersDark);
-        }
+        // Always default to light mode
+        setIsDarkMode(false);
 
         // Remove no-transition class after a brief delay to enable smooth transitions
         requestAnimationFrame(() => {

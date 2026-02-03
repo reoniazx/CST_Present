@@ -3,12 +3,12 @@ import "./globals.css";
 import { Providers } from "./components/Providers";
 
 export const metadata: Metadata = {
-    title: "Computer Science International | KMUTT",
-    description: "Computer Science International Program at King Mongkut's University of Technology Thonburi - Learn cutting-edge technology with a world-class curriculum",
-    keywords: ["Computer Science", "KMUTT", "International Program", "CS", "Thailand"],
-    authors: [{ name: "CST KMUTT" }],
+    title: "Computer Science International | MSU",
+    description: "Computer Science International Program at Mahasarakham University - Learn cutting-edge technology with a world-class curriculum",
+    keywords: ["Computer Science", "MSU", "International Program", "CS", "Thailand"],
+    authors: [{ name: "CST MSU" }],
     openGraph: {
-        title: "Computer Science International | KMUTT",
+        title: "Computer Science International | MSU",
         description: "Computer Science International Program - Ready to develop your skills for the digital future",
         type: "website",
     },
