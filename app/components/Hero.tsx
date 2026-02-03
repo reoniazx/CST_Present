@@ -238,7 +238,7 @@ export default function Hero() {
                         display: 'flex',
                         justifyContent: 'center',
                         gap: '48px',
-                        marginTop: '80px',
+                        marginTop: '20px',
                         flexWrap: 'wrap',
                     }}
                 >
@@ -271,7 +271,7 @@ export default function Hero() {
 
             {/* Scroll Indicator */}
             <div className="scroll-indicator" data-aos="fade-up" data-aos-delay="700">
-                <span>Scroll Down</span>
+                <span></span>
             </div>
 
             <style jsx>{`

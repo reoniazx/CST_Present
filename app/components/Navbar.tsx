@@ -1,407 +1,593 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const navRef = useRef<HTMLElement | null>(null);
+
+    const navLinks = useMemo(
+        () => [
+            { name: 'Home', href: '#hero' },
+            { name: 'About', href: '#about' },
+            { name: 'Programs', href: '#programs' },
+            { name: 'Curriculum', href: '#curriculum' },
+            { name: 'Features', href: '#features' },
+            { name: 'Faculty', href: '#faculty' },
+            { name: 'Contact', href: '#footer' },
+        ],
+        []
+    );
 
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
-        };
-        window.addEventListener('scroll', handleScroll);
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const navLinks = [
-        { name: 'Home', href: '#hero' },
-        { name: 'About', href: '#about' },
-        { name: 'Programs', href: '#programs' },
-        { name: 'Curriculum', href: '#curriculum' },
-        { name: 'Features', href: '#features' },
-        { name: 'Faculty', href: '#faculty' },
-        { name: 'Contact', href: '#footer' },
-    ];
+    // Lock body scroll when mobile menu is open
+    useEffect(() => {
+        if (!mobileMenuOpen) return;
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = prev;
+        };
+    }, [mobileMenuOpen]);
 
-    // Smooth scroll handler with custom easing for premium sliding effect
+    // Close on Escape
+    useEffect(() => {
+        if (!mobileMenuOpen) return;
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setMobileMenuOpen(false);
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [mobileMenuOpen]);
+
+    const getNavbarHeight = () => {
+        const h = navRef.current?.getBoundingClientRect().height ?? 80;
+        return Math.round(h);
+    };
+
     const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
         e.preventDefault();
+
         const targetId = href.replace('#', '');
         const targetElement = document.getElementById(targetId);
+        if (!targetElement) return;
 
-        if (targetElement) {
-            const navbarHeight = 80; // Account for fixed navbar
-            const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navbarHeight;
-            const startPosition = window.scrollY;
-            const distance = targetPosition - startPosition;
-            const duration = 1000; // Duration in milliseconds
-            let startTime: number | null = null;
-
-            // Easing function for smooth deceleration (ease-out-cubic)
-            const easeOutCubic = (t: number): number => {
-                return 1 - Math.pow(1 - t, 3);
-            };
-
-            const animateScroll = (currentTime: number) => {
-                if (startTime === null) startTime = currentTime;
-                const timeElapsed = currentTime - startTime;
-                const progress = Math.min(timeElapsed / duration, 1);
-                const easedProgress = easeOutCubic(progress);
-
-                window.scrollTo(0, startPosition + (distance * easedProgress));
-
-                if (timeElapsed < duration) {
-                    requestAnimationFrame(animateScroll);
-                }
-            };
-
-            requestAnimationFrame(animateScroll);
-        }
-
-        // Close mobile menu if open
+        // Close mobile menu first
         setMobileMenuOpen(false);
+
+        // Calculate target position
+        const navbarHeight = getNavbarHeight();
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - navbarHeight - 8;
+
+        // Smooth scroll with easing
+        const startPosition = window.scrollY;
+        const distance = offsetPosition - startPosition;
+        const duration = 800; // ms
+        let startTime: number | null = null;
+
+        // Easing function for smooth deceleration
+        const easeInOutCubic = (t: number): number => {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        };
+
+        const animation = (currentTime: number) => {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            const ease = easeInOutCubic(progress);
+
+            window.scrollTo(0, startPosition + distance * ease);
+
+            if (progress < 1) {
+                requestAnimationFrame(animation);
+            }
+        };
+
+        requestAnimationFrame(animation);
     };
 
     return (
         <nav
-            className={`navbar ${scrolled ? 'scrolled' : ''}`}
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1000,
-                padding: scrolled ? '12px 0' : '24px 0',
-                background: scrolled
-                    ? 'rgba(255, 255, 255, 0.85)'
-                    : 'transparent',
-                backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
-                borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: scrolled ? '0 4px 30px rgba(0, 0, 0, 0.1)' : 'none',
+            ref={(el) => {
+                // TS-friendly ref assignment
+                // ts-expect-error: fine for runtime
+                navRef.current = el;
             }}
+            className={`navbarRoot ${scrolled ? 'isScrolled' : ''}`}
+            aria-label="Primary navigation"
         >
-            <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="container navInner navRow">
                 {/* Logo */}
-                <a href="#hero" onClick={(e) => handleSmoothScroll(e, '#hero')} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-                    <div
-                        style={{
-                            background: 'linear-gradient(135deg, var(--rose-medium), var(--rose-accent))',
-                            borderRadius: '12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            fontFamily: 'Outfit, sans-serif',
-                            fontWeight: 800,
-                            fontSize: '1.25rem',
-                            boxShadow: '0 4px 12px rgba(229, 62, 62, 0.25)',
-                            padding: '5px 10px',
-
-                        }}
-                    >
+                <a href="#hero" onClick={(e) => handleSmoothScroll(e, '#hero')} className="brand">
+                    <div className="brandBadge" aria-hidden="true">
                         CST
                     </div>
-                    <div>
-                        {/* <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.15rem', color: 'var(--gray-darker)', lineHeight: 1.2 }}>
-                            CST International
-                        </div> */}
-                        <div style={{ fontSize: '0.75rem', color: 'var(--gray-medium)', fontWeight: 500 }}>
-                            MSU
-                        </div>
+                    <div className="brandText">
+                        <div className="brandSub">MSU</div>
                     </div>
                 </a>
 
-                {/* Desktop Navigation */}
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '6px',
-                        background: scrolled ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.8)',
-                        backdropFilter: 'blur(8px)',
-                        borderRadius: '100px',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                    }}
-                    className="desktop-nav"
-                >
-                    {navLinks.map((link) => (
-                        <a
-                            key={link.name}
-                            href={link.href}
-                            onClick={(e) => handleSmoothScroll(e, link.href)}
-                            style={{
-                                padding: '8px 20px',
-                                color: 'var(--gray-dark)',
-                                textDecoration: 'none',
-                                fontSize: '0.9rem',
-                                fontWeight: 500,
-                                borderRadius: '100px',
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                position: 'relative',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'white';
-                                e.currentTarget.style.color = 'var(--rose-deep)';
-                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'transparent';
-                                e.currentTarget.style.color = 'var(--gray-dark)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            }}
-                        >
-                            {link.name}
-                        </a>
-                    ))}
-                </div>
+                {/* Desktop nav */}
+                <div className="desktopNav">
+                    <div className="pillNav" role="navigation" aria-label="Desktop navigation">
+                        {navLinks.map((link) => (
+                            <a
+                                key={link.name}
+                                href={link.href}
+                                onClick={(e) => handleSmoothScroll(e, link.href)}
+                                className="pillLink"
+                            >
+                                {link.name}
+                            </a>
+                        ))}
+                    </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} className="desktop-nav-controls">
                     <a
                         href="https://it.msu.ac.th/course-2/it-admission/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-primary"
-                        style={{
-                            padding: '10px 24px',
-                            fontSize: '0.9rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            boxShadow: '0 4px 14px rgba(229, 62, 62, 0.4)',
-                        }}
+                        className="btn-primary applyBtn"
                     >
                         <span>Apply Now</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                        >
                             <line x1="7" y1="17" x2="17" y2="7"></line>
                             <polyline points="7 7 17 7 17 17"></polyline>
                         </svg>
                     </a>
                 </div>
 
-                {/* Mobile Menu Button */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} className="mobile-controls">
+                {/* Mobile controls */}
+                <div className="mobileControls">
                     <button
-                        className="mobile-menu-btn"
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        style={{
-                            display: 'none',
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: '8px',
-                            flexDirection: 'column',
-                            gap: '5px',
-                        }}
+                        type="button"
+                        className={`mobile-menu-btn ${mobileMenuOpen ? 'is-open' : ''}`}
+                        onClick={() => setMobileMenuOpen((v) => !v)}
+                        aria-expanded={mobileMenuOpen}
+                        aria-controls="mobileMenu"
+                        aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                     >
-                        <span
-                            style={{
-                                width: '24px',
-                                height: '2px',
-                                background: 'var(--gray-darker)',
-                                borderRadius: '2px',
-                                transition: 'all 0.3s ease',
-                                transform: mobileMenuOpen ? 'rotate(45deg) translateY(7px)' : 'none',
-                            }}
-                        />
-                        <span
-                            style={{
-                                width: '24px',
-                                height: '2px',
-                                background: 'var(--gray-darker)',
-                                borderRadius: '2px',
-                                transition: 'all 0.3s ease',
-                                opacity: mobileMenuOpen ? 0 : 1,
-                            }}
-                        />
-                        <span
-                            style={{
-                                width: '24px',
-                                height: '2px',
-                                background: 'var(--gray-darker)',
-                                borderRadius: '2px',
-                                transition: 'all 0.3s ease',
-                                transform: mobileMenuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none',
-                            }}
-                        />
+                        <span />
+                        <span />
+                        <span />
                     </button>
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            {/* Overlay */}
+            <button
+                type="button"
+                className={`overlay ${mobileMenuOpen ? 'show' : ''}`}
+                aria-hidden={!mobileMenuOpen}
+                tabIndex={mobileMenuOpen ? 0 : -1}
+                onClick={() => setMobileMenuOpen(false)}
+            />
+
+            {/* Mobile menu panel */}
             <div
-                className="mobile-menu"
-                style={{
-                    display: mobileMenuOpen ? 'flex' : 'none',
-                    flexDirection: 'column',
-                    padding: '24px',
-                    position: 'fixed',
-                    top: '80px',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'rgba(255, 255, 255, 0.98)',
-                    backdropFilter: 'blur(20px)',
-                    zIndex: 999,
-                    overflowY: 'auto'
-                }}
+                id="mobileMenu"
+                className={`mobileMenu ${mobileMenuOpen ? 'open' : ''}`}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Mobile menu"
             >
-                {navLinks.map((link, index) => (
+                <div className="mobileMenuInner">
+                    {navLinks.map((link, index) => (
+                        <a
+                            key={link.name}
+                            href={link.href}
+                            onClick={(e) => handleSmoothScroll(e, link.href)}
+                            className="mobileLink"
+                            style={{ animationDelay: `${index * 45}ms` }}
+                        >
+                            <span>{link.name}</span>
+                            <span className="arrow" aria-hidden="true">
+                                →
+                            </span>
+                        </a>
+                    ))}
+
                     <a
-                        key={link.name}
-                        href={link.href}
-                        onClick={(e) => handleSmoothScroll(e, link.href)}
-                        style={{
-                            padding: '16px 20px',
-                            color: 'var(--gray-dark)',
-                            textDecoration: 'none',
-                            fontSize: '1.2rem',
-                            fontWeight: 600,
-                            borderRadius: '16px',
-                            transition: 'all 0.3s ease',
-                            borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            animation: `fadeInUp 0.5s ease forwards ${index * 0.05}s`,
-                            opacity: 0,
-                            transform: 'translateY(10px)',
-                        }}
+                        href="https://it.msu.ac.th/course-2/bsc-course/bsc-cst/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-primary mobileApply"
+                        style={{ animationDelay: `${navLinks.length * 45}ms` }}
                     >
-                        {link.name}
-                        <span style={{ fontSize: '1.2rem', opacity: 0.5 }}>→</span>
+                        <span>Apply Now</span>
                     </a>
-                ))}
-                <a
-                    href="https://it.msu.ac.th/course-2/bsc-course/bsc-cst/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-primary"
-                    style={{
-                        marginTop: '24px',
-                        textAlign: 'center',
-                        justifyContent: 'center',
-                        padding: '16px',
-                        fontSize: '1.1rem',
-                        animation: `fadeInUp 0.5s ease forwards ${navLinks.length * 0.05}s`,
-                        opacity: 0,
-                        transform: 'translateY(10px)',
-                    }}
-                >
-                    <span>Apply Now</span>
-                </a>
+                </div>
             </div>
 
             <style jsx>{`
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Root */
+        .navbarRoot {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          padding: 22px 0;
+          background: transparent;
+          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .navbarRoot.isScrolled {
+          padding: 12px 0;
+          background: rgba(255, 255, 255, 0.86);
+          backdrop-filter: blur(16px) saturate(180%);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navInner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        /* Brand */
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          text-decoration: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .brandBadge {
+          background: linear-gradient(135deg, var(--rose-medium), var(--rose-accent));
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-family: Outfit, sans-serif;
+          font-weight: 800;
+          font-size: 1.05rem;
+          box-shadow: 0 4px 12px rgba(229, 62, 62, 0.25);
+          padding: 6px 12px;
+          line-height: 1;
+          white-space: nowrap;
+        }
+
+        .brandSub {
+          font-size: 0.75rem;
+          color: var(--gray-medium);
+          font-weight: 500;
+          line-height: 1.1;
+        }
+
+        /* Desktop */
+        .desktopNav {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .pillNav {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px;
+          background: rgba(255, 255, 255, 0.82);
+          backdrop-filter: blur(8px);
+          border-radius: 999px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .navbarRoot.isScrolled .pillNav {
+          background: rgba(0, 0, 0, 0.03);
+        }
+
+        .pillLink {
+          padding: 8px 18px;
+          color: var(--gray-dark);
+          text-decoration: none;
+          font-size: 0.9rem;
+          font-weight: 500;
+          border-radius: 999px;
+          transition: var(--transition-fast);
+          outline: none;
+        }
+
+        .pillLink:focus-visible {
+          box-shadow: 0 0 0 3px rgba(196, 160, 165, 0.35);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          .pillLink:hover {
+            background: white;
+            color: var(--rose-deep);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          }
+        }
+
+        .applyBtn {
+          padding: 10px 22px;
+          font-size: 0.9rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          box-shadow: 0 4px 14px rgba(229, 62, 62, 0.4);
+          white-space: nowrap;
+        }
+
+        /* Mobile controls */
+        .mobileControls {
+          display: none;
+          align-items: center;
+        }
+
+        .mobile-menu-btn {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          backdrop-filter: blur(10px);
+          border-radius: 12px;
+          cursor: pointer;
+          padding: 10px;
+          display: inline-flex;
+          flex-direction: column;
+          gap: 5px;
+          -webkit-tap-highlight-color: transparent;
+          transition: var(--transition-fast);
+        }
+
+        .mobile-menu-btn:active {
+          transform: scale(0.98);
+        }
+
+        .mobile-menu-btn:focus-visible {
+          box-shadow: 0 0 0 3px rgba(196, 160, 165, 0.45);
+        }
+
+        .mobile-menu-btn span {
+          width: 20px;
+          height: 2px;
+          background: var(--gray-darker);
+          border-radius: 2px;
+          transition: transform 0.25s ease, opacity 0.2s ease;
+          transform-origin: center;
+        }
+
+        /* Overlay */
+        .overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.25);
+          opacity: 0;
+          pointer-events: none;
+          border: none;
+          padding: 0;
+          margin: 0;
+          transition: opacity 0.25s ease;
+          z-index: 998;
+        }
+        .overlay.show {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        /* Mobile menu panel */
+        .mobileMenu {
+          position: fixed;
+          left: 0;
+          right: 0;
+          top: 0;
+          transform: translateY(-8px);
+          opacity: 0;
+          pointer-events: none;
+          z-index: 999;
+          padding: 84px 14px 18px 14px; /* leaves room for navbar */
+          transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .mobileMenu.open {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+
+        .mobileMenuInner {
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 18px;
+          box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+          overflow: hidden;
+          padding: 10px;
+          max-height: calc(100vh - 110px);
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .mobileLink {
+          padding: 14px 14px;
+          color: var(--gray-dark);
+          text-decoration: none;
+          font-size: 1rem;
+          font-weight: 650;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          transition: var(--transition-fast);
+          opacity: 0;
+          transform: translateY(8px);
+          animation: fadeInUp 0.35s ease forwards;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .mobileLink:focus-visible {
+          box-shadow: inset 0 0 0 3px rgba(196, 160, 165, 0.35);
+          outline: none;
+        }
+
+        .mobileLink:active {
+          transform: scale(0.99);
+        }
+
+        .arrow {
+          opacity: 0.55;
+        }
+
+        .mobileApply {
+          margin-top: 10px;
+          width: 100%;
+          justify-content: center;
+          padding: 14px;
+          font-size: 1rem;
+          opacity: 0;
+          transform: translateY(8px);
+          animation: fadeInUp 0.35s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .navbarRoot,
+          .pillLink,
+          .menuBtn,
+          .overlay,
+          .mobileMenu,
+          .mobileLink,
+          .mobileApply {
+            transition: none !important;
+            animation: none !important;
+          }
+          .mobileLink,
+          .mobileApply {
+            opacity: 1 !important;
+            transform: none !important;
+          }
+        }
+
+        /* Breakpoints */
         @media (max-width: 960px) {
-          .desktop-nav, .desktop-nav-controls {
-            display: none !important;
+          .desktopNav {
+            display: none;
+          }
+          .mobileControls {
+            display: flex;
+            position: relative;
+            z-index: 1003;
+          }
+          .navbarRoot {
+            padding: 12px 0;
+          }
+          .navRow {
+            position: relative;
+            z-index: 1002;
+          }
+          .container {
+            position: relative;
+            z-index: 1002;
           }
           .mobile-menu-btn {
             display: flex !important;
+            position: relative;
+            width: 44px;
+            height: 44px;
+            padding: 0 !important;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 14px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
           }
-          /* Mobile Adjustments */
-          .container {
-             padding: 0 14px !important;
-          }
-          nav {
-             padding: 10px 0 !important;
-          }
-          /* Logo adjustments */
-          a[href="#hero"] > div:first-child {
-             width: 32px !important;
-             height: 32px !important;
-             border-radius: 8px !important;
-             font-size: 0.85rem !important;
-             padding: 4px 8px !important;
-          }
-          a[href="#hero"] div[style*="font-size: 1.25rem"] {
-             font-size: 0.85rem !important;
-          }
-           a[href="#hero"] div[style*="font-size: 0.75rem"] {
-             font-size: 0.6rem !important;
-          }
-          
-          /* Mobile Menu Button adjustments */
-          .mobile-menu-btn {
-              padding: 4px !important;
-              gap: 3px !important;
-          }
+
           .mobile-menu-btn span {
-              width: 18px !important;
-              height: 2px !important;
+            position: absolute;
           }
-          
-          /* Mobile Menu adjustments */
-          .mobile-menu {
-              padding: 16px !important;
-              top: 60px !important;
+
+          /* ปิดเมนู: 3 เส้น */
+          .mobile-menu-btn span:nth-child(1) {
+            transform: translateY(-6px);
           }
-          .mobile-menu a {
-              padding: 12px 14px !important;
-              font-size: 0.95rem !important;
-              border-radius: 12px !important;
+          .mobile-menu-btn span:nth-child(2) {
+            transform: translateY(0);
           }
-          .mobile-menu a span {
-              font-size: 0.95rem !important;
+          .mobile-menu-btn span:nth-child(3) {
+            transform: translateY(6px);
+          }
+
+          /* เปิดเมนู: X */
+          .mobile-menu-btn.is-open span:nth-child(1) {
+            transform: rotate(45deg);
+          }
+          .mobile-menu-btn.is-open span:nth-child(2) {
+            opacity: 0;
+          }
+          .mobile-menu-btn.is-open span:nth-child(3) {
+            transform: rotate(-45deg);
+          }
+
+          .brandBadge {
+            border-radius: 10px;
+            font-size: 0.95rem;
+            padding: 6px 10px;
           }
         }
-        
+
         @media (max-width: 480px) {
-          .container {
-             padding: 0 10px !important;
+          .brandBadge {
+            border-radius: 9px;
+            font-size: 0.85rem;
+            padding: 5px 9px;
           }
-          nav {
-             padding: 8px 0 !important;
+          .brandSub {
+            font-size: 0.65rem;
           }
-          /* Logo even smaller */
-          a[href="#hero"] > div:first-child {
-             width: 28px !important;
-             height: 28px !important;
-             border-radius: 6px !important;
-             font-size: 0.75rem !important;
-             padding: 3px 6px !important;
-          }
-          a[href="#hero"] div[style*="font-size: 1.25rem"] {
-             font-size: 0.75rem !important;
-          }
-           a[href="#hero"] div[style*="font-size: 0.75rem"] {
-             font-size: 0.55rem !important;
-          }
-          
-          /* Mobile Menu Button even smaller */
           .mobile-menu-btn {
-              padding: 3px !important;
-              gap: 3px !important;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
           }
           .mobile-menu-btn span {
-              width: 16px !important;
-              height: 1.5px !important;
+            width: 18px;
+            height: 1.5px;
           }
-          
-          /* Mobile Menu even smaller */
-          .mobile-menu {
-              padding: 12px !important;
-              top: 50px !important;
+          .mobile-menu-btn span:nth-child(1) {
+            transform: translateY(-5px);
           }
-          .mobile-menu a {
-              padding: 10px 12px !important;
-              font-size: 0.85rem !important;
-              border-radius: 10px !important;
+          .mobile-menu-btn span:nth-child(3) {
+            transform: translateY(5px);
           }
-          .mobile-menu a span {
-              font-size: 0.85rem !important;
+          .mobileMenu {
+            padding-top: 76px;
+          }
+          .mobileLink {
+            font-size: 0.95rem;
+            padding: 12px 12px;
           }
         }
       `}</style>
-        </nav >
+        </nav>
     );
 }
