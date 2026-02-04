@@ -131,6 +131,15 @@ export default function Navbar() {
                     </div>
 
                     <a
+                        href="https://cststudent.vercel.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary applyBtn"
+                    >
+                        <span>Login Student</span>
+                    </a>
+
+                    <a
                         href="https://it.msu.ac.th/course-2/it-admission/"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -205,11 +214,21 @@ export default function Navbar() {
                     ))}
 
                     <a
+                        href="https://cststudent.vercel.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary mobileApply"
+                        style={{ animationDelay: `${navLinks.length * 45}ms` }}
+                    >
+                        <span>Login Student</span>
+                    </a>
+
+                    <a
                         href="https://it.msu.ac.th/course-2/bsc-course/bsc-cst/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-primary mobileApply"
-                        style={{ animationDelay: `${navLinks.length * 45}ms` }}
+                        style={{ animationDelay: `${(navLinks.length + 1) * 45}ms` }}
                     >
                         <span>Apply Now</span>
                     </a>
