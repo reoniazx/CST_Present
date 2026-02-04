@@ -1,140 +1,149 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useLoading } from '../contexts/LoadingContext';
+
 export default function Footer() {
-    const footerLinks = {
-        Programs: ["Bachelor's Degree", 'AI Track', 'Cybersecurity Track', 'Cloud Track'],
-        'About Us': ['History', 'Faculty', 'Research', 'News'],
-        Students: ['Apply', 'Scholarships', 'Activities', 'Alumni'],
-        Contact: ['Map', 'Email', 'Phone', 'FAQ'],
-    };
+  const { registerSection } = useLoading();
 
-    const socialLinks = [
-        { icon: '📘', name: 'Facebook', url: '#' },
-        { icon: '📸', name: 'Instagram', url: '#' },
-        { icon: '🐦', name: 'Twitter', url: '#' },
-        { icon: '💼', name: 'LinkedIn', url: '#' },
-        { icon: '📺', name: 'YouTube', url: '#' },
-    ];
+  useEffect(() => {
+    registerSection('footer');
+  }, [registerSection]);
 
-    return (
-        <footer
-            id="footer"
-            className="footerRoot"
-            style={{
-                background:
-                    'linear-gradient(180deg, var(--white-pure) 0%, var(--rose-light) 50%, var(--rose-soft) 100%)',
-                position: 'relative',
-                overflow: 'hidden',
-            }}
-        >
-            <div className="topWave" aria-hidden="true" />
+  const footerLinks = {
+    Programs: ["Bachelor's Degree", 'AI Track', 'Cybersecurity Track', 'Cloud Track'],
+    'About Us': ['History', 'Faculty', 'Research', 'News'],
+    Students: ['Apply', 'Scholarships', 'Activities', 'Alumni'],
+    Contact: ['Map', 'Email', 'Phone', 'FAQ'],
+  };
 
-            <div className="container footerContainer">
-                {/* Main Footer Content */}
-                <div className="footerGrid">
-                    {/* Brand Column */}
-                    <div className="brandCol" data-aos="fade-up">
-                        <div className="brandRow">
-                            <div className="brandLogo">CS</div>
-                            <div>
-                                <div className="brandName">CS International</div>
-                                <div className="brandSub">MSU</div>
-                            </div>
-                        </div>
+  const socialLinks = [
+    { icon: '📘', name: 'Facebook', url: '#' },
+    { icon: '📸', name: 'Instagram', url: '#' },
+    { icon: '🐦', name: 'Twitter', url: '#' },
+    { icon: '💼', name: 'LinkedIn', url: '#' },
+    { icon: '📺', name: 'YouTube', url: '#' },
+  ];
 
-                        <p className="brandDesc">
-                            Computer Science International Program
-                            <br />
-                            Mahasarakham University
-                        </p>
+  return (
+    <footer
+      id="footer"
+      className="footerRoot"
+      style={{
+        background:
+          'linear-gradient(180deg, var(--white-pure) 0%, var(--rose-light) 50%, var(--rose-soft) 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <div className="topWave" aria-hidden="true" />
 
-                        {/* Social Links */}
-                        <div className="socialRow" aria-label="Social links">
-                            {socialLinks.map((social, index) => (
-                                <a
-                                    key={index}
-                                    href={social.url}
-                                    className="socialLink"
-                                    aria-label={social.name}
-                                    title={social.name}
-                                >
-                                    <span aria-hidden="true">{social.icon}</span>
-                                    <span className="srOnly">{social.name}</span>
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Link Columns (Desktop) */}
-                    <div className="linkColsDesktop">
-                        {Object.entries(footerLinks).map(([title, links], index) => (
-                            <div key={title} className="linkCol" data-aos="fade-up" data-aos-delay={100 + index * 50}>
-                                <h4 className="linkTitle">{title}</h4>
-                                <ul className="linkList">
-                                    {links.map((link, linkIndex) => (
-                                        <li key={linkIndex} className="linkItem">
-                                            <a href="#" className="footerLink">
-                                                {link}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Link Columns (Mobile Accordion) */}
-                    <div className="linkColsMobile" aria-label="Footer navigation">
-                        {Object.entries(footerLinks).map(([title, links]) => (
-                            <details key={title} className="accordion">
-                                <summary className="accordionSummary">{title}</summary>
-                                <ul className="accordionList">
-                                    {links.map((link, i) => (
-                                        <li key={i} className="linkItem">
-                                            <a href="#" className="footerLink">
-                                                {link}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </details>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Newsletter */}
-                <div className="newsletterCard" data-aos="fade-up" data-aos-delay="300">
-                    <div className="newsletterText">
-                        <h4 className="newsletterTitle">📬 Get the Latest Updates</h4>
-                        <p className="newsletterDesc">Subscribe for program news and events</p>
-                    </div>
-
-                    <div className="newsletterForm">
-                        <input type="email" placeholder="Your email" className="emailInput" />
-                        <button className="btn-primary newsletterBtn" type="button">
-                            <span>Subscribe</span>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Bottom Bar */}
-                <div className="bottomBar">
-                    <p className="copyright">
-                        © 2024 CS International, MSU. All rights reserved.
-                    </p>
-
-                    <div className="bottomLinks">
-                        <a href="#" className="bottomLink">
-                            Privacy Policy
-                        </a>
-                        <a href="#" className="bottomLink">
-                            Terms of Use
-                        </a>
-                    </div>
-                </div>
+      <div className="container footerContainer">
+        {/* Main Footer Content */}
+        <div className="footerGrid">
+          {/* Brand Column */}
+          <div className="brandCol" data-aos="fade-up">
+            <div className="brandRow">
+              <div className="brandLogo">CS</div>
+              <div>
+                <div className="brandName">CS International</div>
+                <div className="brandSub">MSU</div>
+              </div>
             </div>
 
-            <style jsx>{`
+            <p className="brandDesc">
+              Computer Science International Program
+              <br />
+              Mahasarakham University
+            </p>
+
+            {/* Social Links */}
+            <div className="socialRow" aria-label="Social links">
+              {socialLinks.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.url}
+                  className="socialLink"
+                  aria-label={social.name}
+                  title={social.name}
+                >
+                  <span aria-hidden="true">{social.icon}</span>
+                  <span className="srOnly">{social.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Link Columns (Desktop) */}
+          <div className="linkColsDesktop">
+            {Object.entries(footerLinks).map(([title, links], index) => (
+              <div key={title} className="linkCol" data-aos="fade-up" data-aos-delay={100 + index * 50}>
+                <h4 className="linkTitle">{title}</h4>
+                <ul className="linkList">
+                  {links.map((link, linkIndex) => (
+                    <li key={linkIndex} className="linkItem">
+                      <a href="#" className="footerLink">
+                        {link}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Link Columns (Mobile Accordion) */}
+          <div className="linkColsMobile" aria-label="Footer navigation">
+            {Object.entries(footerLinks).map(([title, links]) => (
+              <details key={title} className="accordion">
+                <summary className="accordionSummary">{title}</summary>
+                <ul className="accordionList">
+                  {links.map((link, i) => (
+                    <li key={i} className="linkItem">
+                      <a href="#" className="footerLink">
+                        {link}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
+          </div>
+        </div>
+
+        {/* Newsletter */}
+        <div className="newsletterCard" data-aos="fade-up" data-aos-delay="300">
+          <div className="newsletterText">
+            <h4 className="newsletterTitle">📬 Get the Latest Updates</h4>
+            <p className="newsletterDesc">Subscribe for program news and events</p>
+          </div>
+
+          <div className="newsletterForm">
+            <input type="email" placeholder="Your email" className="emailInput" />
+            <button className="btn-primary newsletterBtn" type="button">
+              <span>Subscribe</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="bottomBar flex justify-center items-center">
+          <p className="copyright">
+            © 2026 CST International, Developed by Chatchawan Chanprom CST 4th Year
+          </p>
+
+          {/* <div className="bottomLinks">
+            <a href="#" className="bottomLink">
+              Privacy Policy
+            </a>
+            <a href="#" className="bottomLink">
+              Terms of Use
+            </a>
+          </div> */}
+        </div>
+      </div>
+
+      <style jsx>{`
         /* ---- Base ---- */
         .footerContainer {
           padding-top: 96px;
@@ -351,10 +360,6 @@ export default function Footer() {
         .bottomBar {
           padding-top: 22px;
           border-top: 1px solid rgba(196, 160, 165, 0.3);
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: space-between;
           gap: 12px;
         }
 
@@ -537,6 +542,6 @@ export default function Footer() {
           }
         }
       `}</style>
-        </footer>
-    );
+    </footer>
+  );
 }

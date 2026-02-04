@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useLoading } from '../contexts/LoadingContext';
 
 export default function PhotoGallery() {
+    const { registerSection } = useLoading();
     const images = Array.from({ length: 20 }, (_, i) => `/CQUPT/${i + 1}.jpg`);
+
+    useEffect(() => {
+        registerSection('gallery');
+    }, [registerSection]);
 
     // --- สร้าง Array 4 ชุด ที่จุดเริ่มต้นรูปภาพต่างกัน (Shifting) ---
 

@@ -1,12 +1,16 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useLoading } from '../contexts/LoadingContext';
 
 export default function Programs() {
     const sectionRef = useRef<HTMLDivElement>(null);
     const elementsRef = useRef<HTMLDivElement[]>([]);
+    const { registerSection } = useLoading();
 
     useEffect(() => {
+        registerSection('programs');
+
         const handleScroll = () => {
             if (!sectionRef.current) return;
 
@@ -24,7 +28,7 @@ export default function Programs() {
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [registerSection]);
 
     const addToRefs = (el: HTMLDivElement | null, index: number) => {
         if (el) elementsRef.current[index] = el;

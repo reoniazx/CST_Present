@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useLoading } from '../contexts/LoadingContext';
 
 export default function Hero() {
     const heroRef = useRef<HTMLDivElement>(null);
     const elementsRef = useRef<HTMLDivElement[]>([]);
+    const { registerSection } = useLoading();
 
     useEffect(() => {
+        // Register this section as loaded
+        registerSection('hero');
+
         const handleScroll = () => {
             if (!heroRef.current) return;
             const scrollY = window.scrollY;
@@ -22,7 +27,7 @@ export default function Hero() {
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [registerSection]);
 
     const addToRefs = (el: HTMLDivElement | null, index: number) => {
         if (el) elementsRef.current[index] = el;
@@ -242,11 +247,7 @@ export default function Hero() {
                         flexWrap: 'wrap',
                     }}
                 >
-                    {[
-                        { number: '20+', label: 'Years of Excellence' },
-                        { number: '500+', label: 'Alumni Worldwide' },
-                        { number: '95%', label: 'Employment Rate' },
-                    ].map((stat, index) => (
+                    {[0, 1, 2].map((index) => (
                         <div key={index} style={{ textAlign: 'center' }}>
                             <div
                                 className="stat-number"
@@ -257,12 +258,20 @@ export default function Hero() {
                                     background: 'linear-gradient(135deg, var(--rose-deep), var(--rose-accent))',
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
+                                    minHeight: '1em',
                                 }}
+                                aria-hidden="true"
                             >
-                                {stat.number}
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: 'var(--gray-medium)', marginTop: '4px' }}>
-                                {stat.label}
+                            <div
+                                style={{
+                                    fontSize: '0.9rem',
+                                    color: 'var(--gray-medium)',
+                                    marginTop: '4px',
+                                    minHeight: '1em',
+                                }}
+                                aria-hidden="true"
+                            >
                             </div>
                         </div>
                     ))}
