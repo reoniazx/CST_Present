@@ -16,6 +16,26 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Security Notes
+
+This project applies baseline hardening in `next.config.ts` and rate limiting in `proxy.ts`.
+
+Optional rate-limit environment variables:
+
+```bash
+REFRESH_RATE_LIMIT_WINDOW_MS=60000
+REFRESH_RATE_LIMIT_MAX=5
+REFRESH_RATE_LIMIT_CLEANUP_INTERVAL_MS=60000
+REFRESH_RATE_LIMIT_MAX_TRACKED_KEYS=10000
+```
+
+Optional distributed store for multi-instance deployments (Upstash Redis):
+
+```bash
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

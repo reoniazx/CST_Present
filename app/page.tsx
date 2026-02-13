@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -17,8 +17,32 @@ import Footer from './components/Footer';
 import Curriculum from './components/Curriculum';
 
 export default function Home() {
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    try {
+      const hasSeen = window.localStorage.getItem('cst_welcome_seen');
+      if (hasSeen) {
+        return false;
+      }
+
+      window.localStorage.setItem('cst_welcome_seen', 'true');
+      return true;
+    } catch {
+      return true;
+    }
+  });
   const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowWelcome(false);
+      setIsClosing(false);
+    }, 500);
+  }, []);
 
   useEffect(() => {
     // Initialize AOS
@@ -33,16 +57,6 @@ export default function Home() {
     const handleScroll = () => {
       AOS.refresh();
     };
-
-    try {
-      const hasSeen = window.localStorage.getItem('cst_welcome_seen');
-      if (!hasSeen) {
-        setShowWelcome(true);
-        window.localStorage.setItem('cst_welcome_seen', 'true');
-      }
-    } catch {
-      setShowWelcome(true);
-    }
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -67,15 +81,7 @@ export default function Home() {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [showWelcome]);
-
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setShowWelcome(false);
-      setIsClosing(false);
-    }, 500);
-  };
+  }, [showWelcome, handleClose]);
 
   return (
     <LoadingProvider>

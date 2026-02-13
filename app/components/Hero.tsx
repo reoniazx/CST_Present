@@ -16,7 +16,7 @@ export default function Hero() {
             if (!heroRef.current) return;
             const scrollY = window.scrollY;
 
-            elementsRef.current.forEach((el, index) => {
+            elementsRef.current.forEach((el) => {
                 if (el) {
                     const speed = el.dataset.speed || '0.5';
                     const y = scrollY * parseFloat(speed);
